@@ -2,16 +2,19 @@ import express from "express";
 import bodyParser from "body-parser";
 import pg from "pg";
 import morgan from "morgan";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 const app = express();
-const port = 4000;
+const port = 8000;
 
 const db = new pg.Client({
-  user: "",
-  host: "",
-  database: "",
-  password: "",
-  port: "Your port number",
+  user: process.env.DB_USER,
+  host: process.env.DB_HOST,
+  database: process.env.DB_NAME,
+  password: process.env.DB_PASSWORD,
+  port: process.env.DB_PORT
 });
 db.connect();
 
@@ -27,9 +30,11 @@ let users = [];
 async function checkVisisted() {
   const result = await db.query("SELECT visited_countries.country_code FROM users JOIN visited_countries ON users.id = visited_countries.user_id WHERE users.id = $1", [currentUserId]);
   let countries = [];
+  console.log(result.rows);
   result.rows.forEach((country) => {
     countries.push(country.country_code);
   });
+  console.log(countries);
   return countries;
 }
 
